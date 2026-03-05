@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "Aurora"
+  },
+  "actions": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "submit": "提交",
+    "cancel": "取消"
+  },
+  "language": {
+    "label": "语言",
+    "names": {
+      "vi": "越南语",
+      "en": "英语",
+      "kr": "韩语",
+      "jp": "日语",
+      "cn": "中文"
+    }
+  },
+  "notFound": {
+    "eyebrow": "迷失在宇宙中",
+    "titleAccent": "糟糕！",
+    "description": "我们似乎找不到你要访问的页面。它可能已被移动或删除。",
+    "backHome": "返回首页"
+  }
+}

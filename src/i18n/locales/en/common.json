@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "Aurora"
+  },
+  "actions": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "language": {
+    "label": "Language",
+    "names": {
+      "vi": "Vietnamese",
+      "en": "English",
+      "kr": "Korean",
+      "jp": "Japanese",
+      "cn": "Chinese"
+    }
+  },
+  "notFound": {
+    "eyebrow": "Lost in space",
+    "titleAccent": "Whoops!",
+    "description": "We can not seem to find the page you are looking for. It may have been moved or removed.",
+    "backHome": "Back to Home"
+  }
+}

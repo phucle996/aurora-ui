@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "Aurora"
+  },
+  "actions": {
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "submit": "Gửi",
+    "cancel": "Hủy"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "names": {
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Anh",
+      "kr": "Tiếng Hàn",
+      "jp": "Tiếng Nhật",
+      "cn": "Tiếng Trung"
+    }
+  },
+  "notFound": {
+    "eyebrow": "Lạc trong không gian",
+    "titleAccent": "Oops!",
+    "description": "Không thể tìm thấy trang bạn đang tìm. Trang có thể đã bị di chuyển hoặc xóa.",
+    "backHome": "Về trang chủ"
+  }
+}

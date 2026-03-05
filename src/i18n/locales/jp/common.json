@@ -1,0 +1,27 @@
+{
+  "app": {
+    "name": "Aurora"
+  },
+  "actions": {
+    "signIn": "サインイン",
+    "signUp": "サインアップ",
+    "submit": "送信",
+    "cancel": "キャンセル"
+  },
+  "language": {
+    "label": "言語",
+    "names": {
+      "vi": "ベトナム語",
+      "en": "英語",
+      "kr": "韓国語",
+      "jp": "日本語",
+      "cn": "中国語"
+    }
+  },
+  "notFound": {
+    "eyebrow": "宇宙で迷子",
+    "titleAccent": "おっと！",
+    "description": "お探しのページが見つかりませんでした。移動または削除された可能性があります。",
+    "backHome": "ホームに戻る"
+  }
+}
