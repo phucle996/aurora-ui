@@ -1,0 +1,102 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - ".github/workflows/release.yml"
+      - "*.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build app
+        run: npm run build
+
+      - name: Trivy scan (source code)
+        uses: aquasecurity/trivy-action@0.34.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          scan-type: fs
+          scan-ref: .
+          skip-files: .github/workflows/release.yml,**/*.md,Dockerfile.dev,**/Dockerfile.dev
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          scanners: vuln,secret,misconfig
+          vuln-type: os,library
+
+      - name: Package dist artifact
+        run: |
+          set -Eeuo pipefail
+          mkdir -p release
+          tar -C dist -czf release/aurora-ui_dist.tar.gz .
+          shasum -a 256 release/*.tar.gz > release/checksums.txt
+
+      - name: Resolve release version
+        id: version
+        run: |
+          set -Eeuo pipefail
+
+          pkg_version="$(node -p "require('./package.json').version || ''")"
+          pkg_version="$(printf '%s' "${pkg_version}" | tr -d '[:space:]')"
+
+          if [ -n "${pkg_version}" ] && [ "${pkg_version}" != "0.0.0" ]; then
+            version="v${pkg_version}"
+          else
+            ts="$(date -u +%Y%m%d%H%M%S)"
+            seed="${ts}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA}"
+            rand="$(printf '%s' "${seed}" | shasum -a 256 | cut -c1-8)"
+            version="v${ts}-${rand}-alpha"
+          fi
+
+          echo "value=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing release/tag (overwrite mode)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          tag="${{ steps.version.outputs.value }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release delete "$tag" -y --cleanup-tag || true
+          fi
+          git push origin ":refs/tags/$tag" || true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.value }}
+          name: Aurora UI ${{ steps.version.outputs.value }}
+          generate_release_notes: true
+          overwrite_files: true
+          files: |
+            release/*.tar.gz
+            release/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

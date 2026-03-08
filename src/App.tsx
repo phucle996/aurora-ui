@@ -15,6 +15,8 @@ import WorkspacePage from "@/pages/UserPages/WorkspacePage";
 import TenantPage from "@/pages/UserPages/TenantPage";
 import UserPage from "@/pages/UserPages/UserPage";
 import NotFoundPage from "@/pages/NotFoundPage/NotFoundPage";
+import PaaSPage from "@/pages/PaaSPages/PaaSPage";
+import DBaaSPage from "@/pages/DBaaSPages/DBaaSPage";
 import AppLayout from "@/layout/app-layout";
 import AuthLayout from "@/layout/auth-layout";
 import AuthRedirectLayout from "@/layout/auth-redirect-layout";
@@ -46,6 +48,8 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/computing" element={<ComputingPage />} />
             <Route path="/computing/new" element={<NewComputingPage />} />
+            <Route path="/paas" element={<PaaSPage />} />
+            <Route path="/dbaas" element={<DBaaSPage />} />
             <Route path="/tenants" element={<TenantPage />} />
             <Route path="/workspaces" element={<WorkspacePage />} />
             <Route path="/users" element={<UserPage />} />

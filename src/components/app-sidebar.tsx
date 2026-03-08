@@ -6,13 +6,14 @@ import {
   Command,
   Frame,
   LifeBuoy,
-  Map,
   PieChart,
   Send,
   Settings2,
   LayoutDashboard,
   Key,
   ContainerIcon,
+  AppWindowMac,
+  Database,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -104,6 +105,24 @@ const data = {
       ],
     },
     {
+      title: "Platform Services",
+      url: "#",
+      icon: AppWindowMac,
+      requiredPermission: "user.read",
+      items: [
+        {
+          title: "PaaS Apps",
+          url: "/paas",
+          requiredPermission: "user.read",
+        },
+        {
+          title: "DBaaS Instances",
+          url: "/dbaas",
+          requiredPermission: "user.read",
+        },
+      ],
+    },
+    {
       title: "Access and Policies",
       url: "#",
       icon: Key,
@@ -159,9 +178,9 @@ const data = {
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Databases",
       url: "#",
-      icon: Map,
+      icon: Database,
     },
   ],
 };
