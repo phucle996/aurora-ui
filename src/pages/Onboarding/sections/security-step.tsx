@@ -126,7 +126,7 @@ export function SecurityStep() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [activeMethod]);
 
   useEffect(() => {
     let mounted = true;
