@@ -21,6 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,10 +36,13 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Run lint
+      - name: Run frontend lint
         run: npm run lint
 
-      - name: Build app
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Build frontend
         run: npm run build
 
       - name: Trivy scan (source code)
@@ -51,21 +60,21 @@ jobs:
           scanners: vuln,secret,misconfig
           vuln-type: os,library
 
-      - name: Package dist artifact
+      - name: Build binaries
+        env:
+          APP_NAME: aurora-ui-service
         run: |
           set -Eeuo pipefail
           mkdir -p release
-          tar -C dist -czf release/aurora-ui_dist.tar.gz .
-          shasum -a 256 release/*.tar.gz > release/checksums.txt
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "release/${APP_NAME}_linux_amd64" ./cmd/server
+          tar -C release -czf "release/${APP_NAME}_linux_amd64.tar.gz" "${APP_NAME}_linux_amd64"
 
       - name: Resolve release version
         id: version
         run: |
           set -Eeuo pipefail
-
-          pkg_version="$(node -p "require('./package.json').version || ''")"
+          pkg_version="$(node -p \"require('./package.json').version || ''\")"
           pkg_version="$(printf '%s' "${pkg_version}" | tr -d '[:space:]')"
-
           if [ -n "${pkg_version}" ] && [ "${pkg_version}" != "0.0.0" ]; then
             version="v${pkg_version}"
           else
@@ -74,8 +83,25 @@ jobs:
             rand="$(printf '%s' "${seed}" | shasum -a 256 | cut -c1-8)"
             version="v${ts}-${rand}-alpha"
           fi
-
           echo "value=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Build installer bundle
+        env:
+          APP_NAME: aurora-ui-service
+          MODULE_NAME: aurora-ui
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -Eeuo pipefail
+          bundle_root="release/bundle_amd64"
+          rm -rf "${bundle_root}"
+          mkdir -p "${bundle_root}/bin" "${bundle_root}/systemd" "${bundle_root}/nginx" "${bundle_root}/dist"
+          install -m 0755 "release/${APP_NAME}_linux_amd64" "${bundle_root}/bin/${APP_NAME}"
+          cp -R dist/. "${bundle_root}/dist/"
+          install -m 0644 install/aurora-ui.service.tpl "${bundle_root}/systemd/aurora-ui.service.tpl"
+          install -m 0644 install/nginx.conf.tpl "${bundle_root}/nginx/aurora-ui.conf.tpl"
+          sed "s|__VERSION__|${VERSION}|g" install/manifest.json > "${bundle_root}/manifest.json"
+          tar -C "${bundle_root}" -czf "release/${MODULE_NAME}_linux_amd64_bundle.tar.gz" .
+          shasum -a 256 release/*.tar.gz > release/checksums.txt
 
       - name: Delete existing release/tag (overwrite mode)
         env:

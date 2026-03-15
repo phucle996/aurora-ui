@@ -1,9 +1,11 @@
 import axios from "axios";
 import type { AxiosError, AxiosInstance } from "axios";
 
+import { runtimeEnv } from "@/lib/runtime-env";
+
 const baseURL =
-  import.meta.env.VITE_UMS_API_URL?.toString() ??
-  import.meta.env.VITE_API_URL?.toString() ??
+  runtimeEnv("VITE_UMS_API_URL") ||
+  runtimeEnv("VITE_API_URL") ||
   "http://localhost:3000";
 
 const api: AxiosInstance = axios.create({

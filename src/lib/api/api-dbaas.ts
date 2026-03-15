@@ -1,10 +1,6 @@
-const runtimeEnv = (
-  import.meta as ImportMeta & {
-    env?: Record<string, string | undefined>;
-  }
-).env;
+import { runtimeEnv } from "@/lib/runtime-env";
 
-const baseURL = runtimeEnv?.VITE_DBAAS_API_URL?.toString() ?? "";
+const baseURL = runtimeEnv("VITE_DBAAS_API_URL");
 
 export type ApiError = {
   message?: string;

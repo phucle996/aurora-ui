@@ -1,0 +1,52 @@
+{
+  "schema_version": "aurora.installer.bundle.v1",
+  "module": "ui",
+  "version": "__VERSION__",
+  "runtime": "linux-systemd",
+  "capabilities": {
+    "install": true,
+    "restart": true,
+    "uninstall": true,
+    "migration": false,
+    "admin_rpc_bootstrap": false,
+    "nginx_integration": true
+  },
+  "binary": {
+    "path": "bin/aurora-ui-service",
+    "install_path": "/opt/aurora/ui/aurora-ui-service",
+    "mode": "0755"
+  },
+  "assets": [
+    {
+      "path": "dist",
+      "install_path": "/opt/aurora/ui/dist"
+    }
+  ],
+  "service": {
+    "name": "aurora-ui.service",
+    "template_path": "systemd/aurora-ui.service.tpl",
+    "unit_path": "/etc/systemd/system/aurora-ui.service"
+  },
+  "nginx": {
+    "enabled": true,
+    "template_path": "nginx/aurora-ui.conf.tpl",
+    "site_path": "/etc/nginx/conf.d/aurora-ui.conf"
+  },
+  "env": {
+    "path": "/var/lib/aurora-ui/config/ui.env"
+  },
+  "runtime_bootstrap": {
+    "module_name": ""
+  },
+  "healthcheck": {
+    "type": "http",
+    "scheme": "http",
+    "host": "127.0.0.1",
+    "paths": [
+      "/health",
+      "/health/readiness",
+      "/health/liveness"
+    ],
+    "timeout_seconds": 8
+  }
+}

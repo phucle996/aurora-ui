@@ -1,10 +1,6 @@
-const runtimeEnv = (
-  import.meta as ImportMeta & {
-    env?: Record<string, string | undefined>;
-  }
-).env;
+import { runtimeEnv } from "@/lib/runtime-env";
 
-const baseURL = runtimeEnv?.VITE_PAAS_API_URL?.toString() ?? "";
+const baseURL = runtimeEnv("VITE_PAAS_API_URL");
 const requestTimeoutMs = 20000;
 
 export type ApiError = {

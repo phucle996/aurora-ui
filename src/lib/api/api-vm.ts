@@ -1,8 +1,9 @@
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 
-const baseURL =
-  import.meta.env.VITE_VM_API_URL?.toString() ?? "http://localhost:3001/api/v1";
+import { runtimeEnv } from "@/lib/runtime-env";
+
+const baseURL = runtimeEnv("VITE_VM_API_URL", "http://localhost:3001/api/v1");
 
 const apiVM: AxiosInstance = axios.create({
   baseURL,
